@@ -1,0 +1,21 @@
+{
+  "name": "Ukeplan – Maskin og Teknikk",
+  "short_name": "Ukeplan",
+  "description": "Ukeplan og oppgaver for de ansatte i Maskin og Teknikk.",
+  "lang": "nb",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15191C",
+  "theme_color": "#15191C",
+  "shortcuts": [
+    { "name": "Stemple inn / ut", "short_name": "Timer", "url": "./?s=timer", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Forespørsler", "url": "./?s=fors", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

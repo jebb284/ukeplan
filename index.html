@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>Ukeplan – Maskin og Teknikk</title>
+<meta name="description" content="Ukeplan og oppgaver for de ansatte i Maskin og Teknikk.">
+<meta name="theme-color" content="#15191C">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ukeplan">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Shown when config.js has not been filled in yet -->
+<section class="skjerm" id="skjerm-oppsett" hidden>
+  <div class="skjerm-kort">
+    <div class="skjerm-logo"><img src="icons/icon-192.png" alt=""><div><small>Maskin og Teknikk</small><b>Ukeplan</b></div></div>
+    <h1>Nesten klar</h1>
+    <p>Appen er ikke koblet til databasen ennå. Fyll inn <code>supabaseUrl</code> og <code>supabaseAnonKey</code> i filen <code>config.js</code>, og last opp på nytt.</p>
+  </div>
+</section>
+
+<!-- Log in / create password -->
+<section class="skjerm" id="skjerm-login" hidden>
+  <form class="skjerm-kort" id="login-skjema" novalidate>
+    <div class="skjerm-logo"><img src="icons/icon-192.png" alt=""><div><small>Maskin og Teknikk</small><b>Ukeplan</b></div></div>
+    <div class="faner" role="tablist" aria-label="Velg">
+      <button type="button" role="tab" id="fane-inn" aria-selected="true">Logg inn</button>
+      <button type="button" role="tab" id="fane-ny" aria-selected="false">Første gang</button>
+    </div>
+    <p id="login-hjelp">Logg inn med e-posten og passordet ditt.</p>
+    <div class="felt"><label for="l-epost">E-post</label><input id="l-epost" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required></div>
+    <div class="felt"><label for="l-passord">Passord</label><input id="l-passord" type="password" autocomplete="current-password" minlength="8" required><span class="hint" id="passord-hint" hidden>Minst 8 tegn. Du bruker det samme passordet neste gang.</span></div>
+    <div class="feilboks" id="login-feil" role="alert" hidden></div>
+    <button class="knapp primar" type="submit" id="login-knapp">Logg inn</button>
+    <button class="lenkeknapp" type="button" id="glemt">Glemt passordet?</button>
+    <p class="boks-info" id="glemt-info" hidden>Be sjefen nullstille kontoen din. Da kan du velge nytt passord under «Første gang».</p>
+  </form>
+</section>
+
+<!-- Logged in, but not on the staff list -->
+<section class="skjerm" id="skjerm-ingen" hidden>
+  <div class="skjerm-kort">
+    <div class="skjerm-logo"><img src="icons/icon-192.png" alt=""><div><small>Maskin og Teknikk</small><b>Ukeplan</b></div></div>
+    <h1>Ingen tilgang ennå</h1>
+    <p>Du er logget inn som <b id="ingen-epost"></b>, men denne e-posten står ikke på ansattlisten.</p>
+    <p class="boks-info">Be sjefen legge deg til under <b>Mer → Ansatte</b> med akkurat denne e-posten. Trykk så «Prøv igjen».</p>
+    <button class="knapp primar" type="button" id="ingen-igjen">Prøv igjen</button>
+    <button class="lenkeknapp" type="button" id="ingen-ut">Logg ut</button>
+  </div>
+</section>
+
+<!-- The plan -->
+<div id="app" hidden>
+  <header class="topp"><div class="wrap topp-inner">
+    <div class="merke"><small>Maskin og <b>Teknikk</b> · internt</small><h1>Ukeplan</h1></div>
+    <div class="ukenav">
+      <button type="button" id="forrige" aria-label="Forrige uke">‹</button>
+      <div class="ukenavn" aria-live="polite"><b id="ukenr">Uke</b><span id="ukedatoer"></span></div>
+      <button type="button" id="neste" aria-label="Neste uke">›</button>
+      <button type="button" id="idag-knapp">I dag</button>
+    </div>
+    <div class="topp-hoyre"><span class="nett" id="nett" hidden>Frakoblet</span><button class="klokke-pill" type="button" id="klokke-pill" hidden></button><button class="meg" type="button" id="meg"></button></div>
+  </div></header>
+  <nav class="appnav" id="appnav" aria-label="Velg del av appen">
+    <button type="button" data-seksjon="plan" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Plan</span></button>
+    <button type="button" data-seksjon="timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg><span>Timer</span></button>
+    <button type="button" data-seksjon="fors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg><span>Forespørsler</span><i id="fors-ant" hidden></i></button>
+  </nav>
+  <main class="wrap seksjon-app" id="s-plan">
+    <div id="bannere"></div>
+    <div class="notat" id="notat"></div>
+    <div class="verktoy">
+      <div class="chips" id="personer" role="group" aria-label="Vis oppgaver for"></div>
+      <div class="knapper">
+        <details class="mer" id="mer"><summary class="knapp">Mer <span aria-hidden="true">▾</span></summary><div class="mer-meny">
+          <button type="button" id="vis-ansatte">Ansatte</button>
+          <button type="button" id="vis-faste">Faste oppgaver</button>
+          <button type="button" id="kopier">Kopier forrige uke</button>
+        </div></details>
+        <button class="knapp" type="button" id="vis-logg">Historikk</button>
+      </div>
+    </div>
+    <p class="lese" id="lese-info" aria-live="polite">Laster planen …</p>
+    <div class="dagfaner" id="dagfaner" role="tablist" aria-label="Velg dag"></div>
+    <div class="tavle" id="tavle"></div>
+  </main>
+  <main class="wrap seksjon-app" id="s-timer" hidden></main>
+  <main class="wrap seksjon-app" id="s-fors" hidden></main>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+  <dialog id="oppg-dlg" aria-labelledby="oppg-tittel"><form class="dlg" id="oppg-skjema" method="dialog" novalidate></form></dialog>
+  <dialog id="ansatt-dlg" aria-labelledby="ansatt-tittel"><div class="dlg" id="ansatt-innhold"></div></dialog>
+  <dialog id="faste-dlg" aria-labelledby="faste-tittel"><div class="dlg" id="faste-innhold"></div></dialog>
+  <dialog id="logg-dlg" aria-labelledby="logg-tittel"><div class="dlg" id="logg-innhold"></div></dialog>
+  <dialog id="timer-dlg" aria-labelledby="timer-tittel"><form class="dlg" id="timer-skjema" novalidate></form></dialog>
+  <dialog id="bilde-dlg" aria-label="Bilde"><div class="dlg" id="bilde-innhold"></div></dialog>
+  <dialog id="konto-dlg" aria-labelledby="konto-tittel"><div class="dlg" id="konto-innhold"></div></dialog>
+</div>
+
+<script src="vendor/supabase-2.118.0.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
